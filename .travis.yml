@@ -3,7 +3,7 @@ env: CI=true
 sudo: false
 
 node_js:
-    - "4.0.0"
+    - "0.12"
 notifications:
     email:
         - grassator@gmail.com
