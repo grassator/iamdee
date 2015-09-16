@@ -1,6 +1,6 @@
 # iamdee
 
-[![NPM version](https://badge.fury.io/js/happened.svg)](https://npmjs.org/package/iamdee)
+[![NPM version](https://badge.fury.io/js/iamdee.svg)](https://npmjs.org/package/iamdee)
 [![GitHub version][git-tag-image]][project-url]
 [![Build Status][travis-image]][travis-url]
 [![Dependency Status][daviddm-url]][daviddm-image]
