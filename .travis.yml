@@ -1,0 +1,9 @@
+language: node_js
+env: CI=true
+sudo: false
+
+node_js:
+    - "4.0.0"
+notifications:
+    email:
+        - grassator@gmail.com
