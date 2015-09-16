@@ -1,5 +1,5 @@
 {
-  "name": "dam",
+  "name": "iamdee",
   "version": "0.1.0",
   "description": "Small AMD loader for inlining.",
   "main": "src/index.js",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/grassator/dam.git"
+    "url": "git+ssh://git@github.com/grassator/iamdee.git"
   },
   "keywords": [
     "amd",
@@ -19,9 +19,9 @@
   "author": "Dmitriy Kubyshkin <grassator@gmail.com>",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/grassator/dam/issues"
+    "url": "https://github.com/grassator/iamdee/issues"
   },
-  "homepage": "https://github.com/grassator/dam#readme",
+  "homepage": "https://github.com/grassator/iamdee#readme",
   "devDependencies": {
     "chai": "^3.2.0",
     "core-js": "^1.1.4",
