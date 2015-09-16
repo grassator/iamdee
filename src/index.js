@@ -22,8 +22,7 @@
  * I tried to comment most strange places, but still be warned:
  *      here be dragons...
  */
-;(function (undefined) {
-    /* global define: true, requirejs: true, require: true */
+(function (undefined) {
     var REQUIRE_KEY = 'require';
     var EXPORTS_KEY = 'exports';
     var MODULE_KEY = 'module';
@@ -120,7 +119,7 @@
         remainingLoadCount || setTimeout(loadHandler);
     }
 
-    (requirejs = require = req).config = function (conf) {
+    (requirejs = require = req).config = function (conf) { // eslint-disable-line
         baseUrl = conf.baseUrl || baseUrl;
     };
 
@@ -182,5 +181,5 @@
     }
 
     def.amd = loaded;
-    define = def;
+    define = def; // eslint-disable-line
 }());

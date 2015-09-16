@@ -45,7 +45,7 @@ module.exports = function(config) {
         colors: true,
 
         // level of logging
-        logLevel: config.LOG_INFO,
+        logLevel: config.LOG_WARN,
 
         // enable / disable watching file and executing tests whenever any file changes
         autoWatch: true,

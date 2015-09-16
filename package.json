@@ -4,8 +4,10 @@
   "description": "Small AMD loader for inlining.",
   "main": "src/index.js",
   "scripts": {
+    "prepublish": "npm run lint && npm run test",
     "test": "karma start --singleRun=true",
-    "tdd": "karma start"
+    "tdd": "karma start",
+    "lint": "eslint src/ test/"
   },
   "repository": {
     "type": "git",
@@ -25,6 +27,7 @@
   "devDependencies": {
     "chai": "^3.2.0",
     "core-js": "^1.1.4",
+    "eslint": "^1.4.3",
     "karma": "^0.13.9",
     "karma-chai": "^0.1.0",
     "karma-mocha": "^0.2.0",

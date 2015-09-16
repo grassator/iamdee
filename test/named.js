@@ -40,7 +40,7 @@ describe('DAM:named', function () {
     });
 
     it('should provide no arguments when empty dependencies specified', function (done) {
-        define('module-empty-deps', [], function (require, module, exports) {
+        define('module-empty-deps', [], function () {
             return arguments.length;
         });
 
