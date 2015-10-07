@@ -2,15 +2,10 @@
 
 [![NPM version](https://badge.fury.io/js/iamdee.svg)](https://npmjs.org/package/iamdee)
 [![Build Status][travis-image]][travis-url]
-[![Dependency Status][daviddm-url]][daviddm-image]
 
 [project-url]: https://github.com/grassator/iamdee
 [travis-url]: https://travis-ci.org/grassator/iamdee
 [travis-image]: https://travis-ci.org/grassator/iamdee.svg?branch=master
-[daviddm-url]: https://david-dm.org/grassator/iamdee.svg?theme=shields.io
-[daviddm-image]: https://david-dm.org/grassator/iamdee
-
-> This module is still in dev and should not be used in production.
 
 Small AMD loader designed for inlining into the page – just ~1.3Kb (~770 bytes gzipped).
 
