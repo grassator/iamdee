@@ -6,8 +6,6 @@
         "after": false,
         "beforeEach": false,
         "afterEach": false,
-        "assert": false,
-        "require": false,
-        "define": false
+        "assert": false
     }
 }

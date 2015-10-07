@@ -35,6 +35,7 @@
     var baseUrl = './';
     var currentlyDefinedDependencies;
     var currentlyDefinedFactory;
+    var currentlyDefinedModule;
     var el;
     var tmp1;
 
@@ -95,7 +96,7 @@
                         id = id[REPLACE_KEY](/\/\.?\//, '/')[REPLACE_KEY](/[^\/]+\/\.\.\//, '');
                     }
                 }
-                src = baseUrl + src + '.js';
+                src = baseUrl + id + '.js';
             }
             if ((id in loaded) || (id in ctx)) {
                 --remainingLoadCount;
@@ -129,7 +130,7 @@
         var ctx;
         var module;
         var result;
-        if (defined[id]) {
+        if (defined[id] || (currentlyDefinedModule && currentlyDefinedModule !== id)) {
             return;
         }
         (defined[id] = function () {
@@ -171,6 +172,7 @@
         // We have to reassign to captured variables to support anonymous modules
         currentlyDefinedDependencies = dependencies;
         currentlyDefinedFactory = factory;
+        currentlyDefinedModule = id;
 
         // if this is a named module we can define it right away,
         // which doesn't work for anonymous where we have to wait

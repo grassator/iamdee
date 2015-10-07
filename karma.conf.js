@@ -1,4 +1,4 @@
-
+/* global module:false, process:false */
 module.exports = function(config) {
     config.set({
 
@@ -14,7 +14,7 @@ module.exports = function(config) {
         // list of files / patterns to load in the browser
         files: [
             'node_modules/core-js/client/core.js',
-            'src/**/*.js',
+            process.env.USE_REQUIREJS ? 'node_modules/requirejs/require.js' : 'src/index.js',
             'test/**/*.js',
             {
                 pattern: 'fixtures/**/*.js',

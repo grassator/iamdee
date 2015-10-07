@@ -1,12 +1,10 @@
 # iamdee
 
 [![NPM version](https://badge.fury.io/js/iamdee.svg)](https://npmjs.org/package/iamdee)
-[![GitHub version][git-tag-image]][project-url]
 [![Build Status][travis-image]][travis-url]
 [![Dependency Status][daviddm-url]][daviddm-image]
 
 [project-url]: https://github.com/grassator/iamdee
-[git-tag-image]: http://img.shields.io/github/tag/grassator/iamdee.svg
 [travis-url]: https://travis-ci.org/grassator/iamdee
 [travis-image]: https://travis-ci.org/grassator/iamdee.svg?branch=master
 [daviddm-url]: https://david-dm.org/grassator/iamdee.svg?theme=shields.io
