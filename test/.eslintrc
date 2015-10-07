@@ -6,6 +6,7 @@
         "after": false,
         "beforeEach": false,
         "afterEach": false,
-        "assert": false
+        "assert": false,
+        "referee": false
     }
 }

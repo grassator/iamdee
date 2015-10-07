@@ -36,7 +36,7 @@
     var currentlyDefinedDependencies;
     var currentlyDefinedFactory;
     var currentlyDefinedModule;
-    var el;
+    var toString = loaded.toString;
     var tmp1;
 
     /**
@@ -50,12 +50,33 @@
      * @returns {boolean}
      */
     function isType(something, firstLetterOfTypeName) {
-        return (typeof something)[0] == firstLetterOfTypeName;
+        return toString.call(something).charAt(8) == firstLetterOfTypeName;
+    }
+
+    function loadModule(id, src, el) {
+        // need to add new script to the browser
+        el = doc.createElement('script');
+
+        // onreadystatechange is necessary for IE8
+        el.onload = el.onreadystatechange = function() {
+            // Technically the next line `if` should be like this:
+            //    if (!defined[id] &&
+            //        (this.readyState === undefined || this.readState === 'complete' || this.readyState === 'loaded')
+            //    ) {
+            // but because converted to string the interesting for us values start
+            // with a letter `l` or `c` or `u` and end with a letter `d` or `e` we
+            // can use a regexp here to save some bytes.
+            if (!defined[id] && /^[lcu].*[de]$/.test(this.readyState)) {
+                doDefine(id);
+            }
+        };
+        el.src = src;
+        doc.getElementsByTagName('head')[0].appendChild(el);
     }
 
     function req(dependencyNames, callback, ctx, basePath) {
         // synchronous require statement
-        if (isType(dependencyNames, 's')) {
+        if (isType(dependencyNames, 'S')) {
             return loaded[dependencyNames][EXPORTS_KEY];
         }
 
@@ -108,11 +129,7 @@
                 if (defined[id]) {
                     defined[id]();
                 } else {
-                    // need to add new script to the browser
-                    el = doc.createElement('script');
-                    el.onload = doDefine.bind(undefined, id);
-                    el.src = src;
-                    doc.head.appendChild(el);
+                    loadModule(id, src);
                 }
             }
         }
@@ -142,7 +159,7 @@
             ctx[EXPORTS_KEY] = module[EXPORTS_KEY] = {};
             module.id = id;
             req(dependencies, function () {
-                result = isType(factory, 'o') ? factory : factory.apply(undefined, arguments);
+                result = isType(factory, 'O') ? factory : factory.apply(undefined, arguments);
                 if (result !== undefined) {
                     module[EXPORTS_KEY] = result;
                 }
@@ -157,14 +174,14 @@
     function def(id, dependencies, factory) {
 
         // Adjust arguments for anonymous modules
-        if (!isType(id, 's')) {
+        if (!isType(id, 'S')) {
             factory = dependencies;
             dependencies = id;
             id = undefined;
         }
 
         // If module doesn't specify array of dependencies with assume default ones
-        if (!Array.isArray(dependencies)) {
+        if (!isType(dependencies, 'A')) {
             factory = dependencies;
             dependencies = [REQUIRE_KEY, EXPORTS_KEY, MODULE_KEY];
         }

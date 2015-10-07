@@ -1,4 +1,5 @@
-describe('dam.js API', function () {
+describe('iamdee API', function () {
+    var assert = referee.assert;
 
     it('should define a global require function', function () {
         assert.isFunction(require);

@@ -33,9 +33,13 @@
     "karma-chai": "^0.1.0",
     "karma-mocha": "^0.2.0",
     "karma-phantomjs-launcher": "^0.2.1",
+    "karma-referee": "^0.4.2",
     "mocha": "^2.3.2",
     "phantomjs": "^1.9.18",
+    "referee": "^1.1.1",
+    "referee-sinon": "^1.0.2",
     "requirejs": "^2.1.20",
-    "should": "^7.1.0"
+    "should": "^7.1.0",
+    "sinon": "^1.17.1"
   }
 }

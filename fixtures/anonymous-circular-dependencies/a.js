@@ -1,4 +1,4 @@
-define('anonymous-circular-dependencies/a', ['anonymous-circular-dependencies/b'], function () {
+define(['anonymous-circular-dependencies/b'], function () {
     return {
         payload: 'OK',
         getter: function () {

@@ -1,4 +1,5 @@
-describe('DAM:named', function () {
+describe('iamdee', function () {
+    var assert = referee.assert;
 
     it('should allow defining and requiring module from code', function (done) {
         define('some-named-module', function () {
@@ -6,7 +7,7 @@ describe('DAM:named', function () {
         });
 
         require(['some-named-module'], function (module) {
-            assert.equal(module, 'OK');
+            assert.equals(module, 'OK');
             done();
         });
     });
@@ -17,7 +18,7 @@ describe('DAM:named', function () {
         });
 
         require(['inline-exports'], function (module) {
-            assert.equal(module.foo, 'bar');
+            assert.equals(module.foo, 'bar');
             done();
         });
     });
@@ -45,31 +46,31 @@ describe('DAM:named', function () {
         });
 
         require(['module-empty-deps'], function (module) {
-            assert.strictEqual(module, 0);
+            assert.same(module, 0);
             done();
         });
     });
 
     it('should be able to load a named module without dependencies', function (done) {
         require(['named-no-dependencies'], function (module) {
-            assert.equal(module, 'OK');
+            assert.equals(module, 'OK');
             done();
         });
     });
 
     it('should be able to load a named module with dependencies', function (done) {
         require(['named-with-dependencies'], function (module) {
-            assert.equal(module.a, 'A');
-            assert.equal(module.b.self, 'B');
-            assert.equal(module.b.sub, 'C');
+            assert.equals(module.a, 'A');
+            assert.equals(module.b.self, 'B');
+            assert.equals(module.b.sub, 'C');
             done();
         });
     });
 
     it('should be able to load a named module with circular dependencies', function (done) {
         require(['named-circular-dependencies'], function (module) {
-            assert.equal(module.a.getter(), 'OK');
-            assert.equal(module.b(), 'OK');
+            assert.equals(module.a.getter(), 'OK');
+            assert.equals(module.b(), 'OK');
             done();
         });
     });

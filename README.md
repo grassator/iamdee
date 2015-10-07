@@ -12,7 +12,7 @@
 
 > This module is still in dev and should not be used in production.
 
-Small AMD loader designed for inlining into the page.
+Small AMD loader designed for inlining into the page – just ~1.3Kb (~770 bytes gzipped).
 
 ## Supported Features
 
@@ -20,7 +20,7 @@ Small AMD loader designed for inlining into the page.
 * Anonymous modules
 * `baseUrl` config
 
-## Projected Browser Support
+## Browser Support
 
 * Evergreen (Chrome, Firefox, Opera, Safari, Edge)
 * IE8+
