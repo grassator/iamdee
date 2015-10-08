@@ -137,7 +137,7 @@
         remainingLoadCount || setTimeout(loadHandler);
     }
 
-    (requirejs = require = req).config = function (conf) { // eslint-disable-line
+    (requirejs = require = req)['config'] = function (conf) { // eslint-disable-line
         baseUrl = conf.baseUrl || baseUrl;
     };
 
@@ -199,6 +199,6 @@
         }
     }
 
-    def.amd = loaded;
-    define = def; // eslint-disable-line
+    def['amd'] = loaded;
+    window['define'] = def; // eslint-disable-line
 }());
