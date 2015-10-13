@@ -2,3 +2,4 @@ karma.conf.js
 node_modules/
 fixtures/
 test/
+src/

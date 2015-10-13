@@ -7,7 +7,25 @@
 [travis-url]: https://travis-ci.org/grassator/iamdee
 [travis-image]: https://travis-ci.org/grassator/iamdee.svg?branch=master
 
-Small AMD loader designed for inlining into the page – just ~1.3Kb (~770 bytes gzipped).
+Small AMD loader designed for inlining into the page – just ~1.2Kb (~710 bytes gzipped). It has original `require.js`-compatible API and should be a stand-in replacement if you don't require advanced features like plugins, paths or shims. 
+
+## Usage
+
+Add inline script from the minified file from the `dist` folder into your page. Then in your code you can use regular `require` / `define` functions:
+
+```js
+require(['your-dependency'], function (yourDependency) {
+    // your code
+});
+```
+
+or
+
+```js
+define(['your-dependency'], function (yourDependency) {
+    // your code
+});
+```
 
 ## Supported Features
 

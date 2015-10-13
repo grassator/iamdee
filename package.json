@@ -1,12 +1,15 @@
 {
   "name": "iamdee",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Small AMD loader for inlining.",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "prepublish": "npm run lint && npm run test-original && npm run test",
+    "prepublish": "npm run lint && npm run test-original && npm run test && npm run clean && npm run build && npm run test-build",
+    "clean": "rm -rf ./dist/",
+    "build": "mkdir -p dist && ccjs src/index.js --compilation_level=ADVANCED_OPTIMIZATIONS | uglifyjs --mangle > dist/index.js",
     "test": "karma start --singleRun=true",
-    "test-original": "USE_REQUIREJS=1 karma start --singleRun=true",
+    "test-original": "REQUIRE_LIB=node_modules/requirejs/require.js karma start --singleRun=true",
+    "test-build": "REQUIRE_LIB=dist/index.js karma start --singleRun=true",
     "tdd": "karma start",
     "lint": "eslint src/ test/"
   },
@@ -17,6 +20,7 @@
   "keywords": [
     "amd",
     "module",
+    "require",
     "small"
   ],
   "author": "Dmitriy Kubyshkin <grassator@gmail.com>",
@@ -27,6 +31,7 @@
   "homepage": "https://github.com/grassator/iamdee#readme",
   "devDependencies": {
     "chai": "^3.2.0",
+    "closurecompiler": "1.5.2",
     "core-js": "^1.1.4",
     "eslint": "^1.4.3",
     "karma": "^0.13.9",
@@ -40,6 +45,7 @@
     "referee-sinon": "^1.0.2",
     "requirejs": "^2.1.20",
     "should": "^7.1.0",
-    "sinon": "^1.17.1"
+    "sinon": "^1.17.1",
+    "uglifyjs": "2.4.10"
   }
 }

@@ -22,12 +22,7 @@
  * I tried to comment most strange places, but still be warned:
  *      here be dragons...
  */
-(function (undefined) {
-    var REQUIRE_KEY = 'require';
-    var EXPORTS_KEY = 'exports';
-    var MODULE_KEY = 'module';
-    var REPLACE_KEY = 'replace';
-
+(function (window, undefined) {
     var doc = document;
     var loading = {};
     var defined = {};
@@ -37,7 +32,13 @@
     var currentlyDefinedFactory;
     var currentlyDefinedModule;
     var toString = loaded.toString;
-    var tmp1;
+    var temp;
+
+
+    // This will be inlined by closure compiler
+    var ARRAY_TYPE = 'A';
+    var STRING_TYPE = 'S';
+    var OBJECT_TYPE = 'O';
 
     /**
      * This is basically a `typeof` operator wrapped in a function.
@@ -46,11 +47,16 @@
      * start with a different letter, this letter is used for
      * comparison instead of the whole type name.
      * @param {*} something
-     * @param firstLetterOfTypeName
+     * @param {string} firstLetterOfClassName
      * @returns {boolean}
      */
-    function isType(something, firstLetterOfTypeName) {
-        return toString.call(something).charAt(8) == firstLetterOfTypeName;
+    function isType(something, firstLetterOfClassName) {
+        // The way this works is that:
+        // ({}).toString.call('foo') === '[object String]'
+        // and so if we look at this -------------^ letter
+        // it's going an 8th letter and it's different for
+        // all basic types in JavaScript and for Array.
+        return toString.call(something)[8] == firstLetterOfClassName;
     }
 
     function loadModule(id, src, el) {
@@ -71,13 +77,13 @@
             }
         };
         el.src = src;
-        doc.getElementsByTagName('head')[0].appendChild(el);
+        doc.documentElement.appendChild(el);
     }
 
     function req(dependencyNames, callback, ctx, basePath) {
         // synchronous require statement
-        if (isType(dependencyNames, 'S')) {
-            return loaded[dependencyNames][EXPORTS_KEY];
+        if (isType(dependencyNames, STRING_TYPE)) {
+            return loaded[dependencyNames]['exports'];
         }
 
         // Require statement should not fail if callback is not provided.
@@ -86,7 +92,7 @@
         callback = callback || isType;
         basePath = basePath || '';
         ctx = ctx || {};
-        ctx[REQUIRE_KEY] = req;
+        ctx['require'] = req;
 
         var dependencyCount = dependencyNames.length;
         var remainingLoadCount = dependencyCount;
@@ -96,12 +102,12 @@
 
         function loadHandler() {
             if (--remainingLoadCount <= 0) {
-                tmp1 = [];
+                temp = [];
                 i = dependencyCount;
                 while (i--) {
-                    tmp1[i] = ctx[dependencyNames[i]] || loaded[dependencyNames[i]][EXPORTS_KEY];
+                    temp[i] = ctx[dependencyNames[i]] || loaded[dependencyNames[i]]['exports'];
                 }
-                callback.apply(undefined, tmp1);
+                callback.apply(undefined, temp);
             }
         }
 
@@ -111,10 +117,10 @@
             id = src = dependencyNames[i];
             if (!/^\/|^\w+:|\.js$/.test(id)) {
                 if (id[0] == '.') {
-                    id = basePath[REPLACE_KEY](/[^/]+$/, '') + id;
+                    id = basePath['replace'](/[^/]+$/, '') + id;
                     while(id != dependencyNames[i]) {
                         dependencyNames[i] = id;
-                        id = id[REPLACE_KEY](/\/\.?\//, '/')[REPLACE_KEY](/[^\/]+\/\.\.\//, '');
+                        id = id['replace'](/\/\.?\//, '/')['replace'](/[^\/]+\/\.\.\//, '');
                     }
                 }
                 src = baseUrl + id + '.js';
@@ -137,7 +143,7 @@
         remainingLoadCount || setTimeout(loadHandler);
     }
 
-    (requirejs = require = req)['config'] = function (conf) { // eslint-disable-line
+    (window['requirejs'] = window['require'] = req)['config'] = function (conf) {
         baseUrl = conf.baseUrl || baseUrl;
     };
 
@@ -155,16 +161,16 @@
                 return;
             }
             ctx = {};
-            module = ctx[MODULE_KEY] = loaded[id] = {};
-            ctx[EXPORTS_KEY] = module[EXPORTS_KEY] = {};
+            module = ctx['module'] = loaded[id] = {};
+            ctx['exports'] = module['exports'] = {};
             module.id = id;
             req(dependencies, function () {
-                result = isType(factory, 'O') ? factory : factory.apply(undefined, arguments);
+                result = isType(factory, OBJECT_TYPE) ? factory : factory.apply(undefined, arguments);
                 if (result !== undefined) {
-                    module[EXPORTS_KEY] = result;
+                    module['exports'] = result;
                 }
-                while ((tmp1 = loading[id].shift())) {
-                    tmp1();
+                while ((temp = loading[id].shift())) {
+                    temp();
                 }
                 loading[id] = undefined;
             }, ctx, id);
@@ -174,16 +180,16 @@
     function def(id, dependencies, factory) {
 
         // Adjust arguments for anonymous modules
-        if (!isType(id, 'S')) {
+        if (!isType(id, STRING_TYPE)) {
             factory = dependencies;
             dependencies = id;
             id = undefined;
         }
 
         // If module doesn't specify array of dependencies with assume default ones
-        if (!isType(dependencies, 'A')) {
+        if (!isType(dependencies, ARRAY_TYPE)) {
             factory = dependencies;
-            dependencies = [REQUIRE_KEY, EXPORTS_KEY, MODULE_KEY];
+            dependencies = ['require', 'exports', 'module'];
         }
 
         // We have to reassign to captured variables to support anonymous modules
@@ -200,5 +206,5 @@
     }
 
     def['amd'] = loaded;
-    window['define'] = def; // eslint-disable-line
-}());
+    window['define'] = def;
+}(this));
