@@ -165,7 +165,7 @@
             ctx['exports'] = module['exports'] = {};
             module.id = id;
             req(dependencies, function () {
-                result = isType(factory, OBJECT_TYPE) ? factory : factory.apply(undefined, arguments);
+                result = isType(factory, OBJECT_TYPE) ? factory : (factory || isType).apply(undefined, arguments);
                 if (result !== undefined) {
                     module['exports'] = result;
                 }
