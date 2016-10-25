@@ -66,7 +66,7 @@
         el[RJS_PROPERTY] = id;
 
         el.src = src;
-        doc.documentElement.appendChild(el);
+        doc.head.appendChild(el);
     }
 
     function req(dependencyNames, callback, ctx, basePath) {
