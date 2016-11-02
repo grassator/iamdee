@@ -28,14 +28,12 @@
     var defined = {};
     var loaded = {};
     var baseUrl = './';
-    var currentlyDefinedDependencies;
-    var currentlyDefinedFactory;
-    var currentlyDefinedModule;
     var toString = loaded.toString;
     var temp;
 
 
     // This will be inlined by closure compiler
+    var RJS_PROPERTY = 'rjs';
     var ARRAY_TYPE = 'A';
     var STRING_TYPE = 'S';
     var OBJECT_TYPE = 'O';
@@ -63,19 +61,10 @@
         // need to add new script to the browser
         el = doc.createElement('script');
 
-        // onreadystatechange is necessary for IE8
-        el.onload = el.onreadystatechange = function() {
-            // Technically the next line `if` should be like this:
-            //    if (!defined[id] &&
-            //        (this.readyState === undefined || this.readState === 'complete' || this.readyState === 'loaded')
-            //    ) {
-            // but because converted to string the interesting for us values start
-            // with a letter `l` or `c` or `u` and end with a letter `d` or `e` we
-            // can use a regexp here to save some bytes.
-            if (!defined[id] && /^[lcu].*[de]$/.test(this.readyState)) {
-                doDefine(id);
-            }
-        };
+        // saving the id of the module to a property of the element so that we can
+        // later read it inside of the anonymous `define` call
+        el[RJS_PROPERTY] = id;
+
         el.src = src;
         doc.documentElement.appendChild(el);
     }
@@ -147,13 +136,25 @@
         baseUrl = conf.baseUrl || baseUrl;
     };
 
-    function doDefine(id) {
-        var dependencies = currentlyDefinedDependencies;
-        var factory = currentlyDefinedFactory;
+    function def(id, dependencies, factory) {
         var ctx;
         var module;
         var result;
-        if (defined[id] || (currentlyDefinedModule && currentlyDefinedModule !== id)) {
+
+        // Adjust arguments for anonymous modules by extracting id from the element
+        if (!isType(id, STRING_TYPE)) {
+            factory = dependencies;
+            dependencies = id;
+            id = doc['currentScript'][RJS_PROPERTY];
+        }
+
+        // If module doesn't specify array of dependencies with assume default ones
+        if (!isType(dependencies, ARRAY_TYPE)) {
+            factory = dependencies;
+            dependencies = ['require', 'exports', 'module'];
+        }
+
+        if (defined[id]) {
             return;
         }
         (defined[id] = function () {
@@ -175,34 +176,6 @@
                 loading[id] = undefined;
             }, ctx, id);
         })();
-    }
-
-    function def(id, dependencies, factory) {
-
-        // Adjust arguments for anonymous modules
-        if (!isType(id, STRING_TYPE)) {
-            factory = dependencies;
-            dependencies = id;
-            id = undefined;
-        }
-
-        // If module doesn't specify array of dependencies with assume default ones
-        if (!isType(dependencies, ARRAY_TYPE)) {
-            factory = dependencies;
-            dependencies = ['require', 'exports', 'module'];
-        }
-
-        // We have to reassign to captured variables to support anonymous modules
-        currentlyDefinedDependencies = dependencies;
-        currentlyDefinedFactory = factory;
-        currentlyDefinedModule = id;
-
-        // if this is a named module we can define it right away,
-        // which doesn't work for anonymous where we have to wait
-        // for script onload callback to know the id of the module
-        if (id) {
-            doDefine(id);
-        }
     }
 
     def['amd'] = loaded;
