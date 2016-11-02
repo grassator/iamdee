@@ -7,7 +7,7 @@
 [travis-url]: https://travis-ci.org/grassator/iamdee
 [travis-image]: https://travis-ci.org/grassator/iamdee.svg?branch=master
 
-Small AMD loader designed for inlining into the page – just ~1.2Kb (~710 bytes gzipped). It has original `require.js`-compatible API and should be a stand-in replacement if you don't require advanced features like plugins, paths or shims. 
+Small AMD loader designed for inlining into the page – just ~1.1Kb (~640 bytes gzipped). It has original `require.js`-compatible API and should be a stand-in replacement if you don't require advanced features like plugins, paths or shims. 
 
 ## Usage
 
@@ -36,7 +36,7 @@ define(['your-dependency'], function (yourDependency) {
 ## Browser Support
 
 * Evergreen (Chrome, Firefox, Opera, Safari, Edge)
-* IE8+
+* IE9+
 
 ## License
 

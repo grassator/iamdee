@@ -1,6 +1,6 @@
 {
   "name": "iamdee",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Small AMD loader for inlining.",
   "main": "dist/index.js",
   "scripts": {
