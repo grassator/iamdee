@@ -28,6 +28,7 @@
     var defined = {};
     var loaded = {};
     var baseUrl = './';
+    var onNodeCreated;
     var toString = loaded.toString;
     var temp;
 
@@ -66,6 +67,10 @@
         el[RJS_PROPERTY] = id;
 
         el.src = src;
+        // Allow node to be modified before it is added to the DOM
+        if (onNodeCreated) {
+            onNodeCreated(el);
+        }
         doc.head.appendChild(el);
     }
 
@@ -133,7 +138,8 @@
     }
 
     (window['requirejs'] = window['require'] = req)['config'] = function (conf) {
-        baseUrl = conf.baseUrl || baseUrl;
+        baseUrl = conf['baseUrl'] || baseUrl;
+        onNodeCreated = conf['onNodeCreated'];
     };
 
     function def(id, dependencies, factory) {
