@@ -438,23 +438,29 @@ interface Window {
     }
   }
 
+  // This is a live node list, so we do not need to re-query
+  const scripts = doc.getElementsByTagName("script");
+
   function getCurrentScript() {
-    const script = doc["currentScript"];
+    let script = doc["currentScript"];
     if (script) {
       return script;
     }
-    // Internet Explorer 11 and 10 do not support currentScript,
-    // so we are inspecting error stack for the right script url
+    // Support for IE 9-11
     try {
       throw Error();
     } catch (err) {
-      const lines = err.stack ? err.stack.split("\n") : "";
-      const scriptTags = doc.getElementsByTagName("script");
-      for (let i = scriptTags.length - 1; i >= 0; --i) {
-        const src = scriptTags[i].src;
-        // Check for empty src is necessary for inline tags
-        if (src && lines[lines.length - 1].indexOf(src) >= 0) {
-          return scriptTags[i];
+      // Internet Explorer 11 does not support currentScript,
+      // so we are inspecting error stack for the right script url
+      const lastLine = err.stack ? err.stack.split("\n").pop() : "";
+      for (let i = scripts.length - 1; i >= 0; --i) {
+        script = scripts[i];
+        if (script.src) {
+          if (lastLine.indexOf(script.src) >= 0) {
+            return script;
+          } else if ((script as any).readyState == "interactive") {
+            return script;
+          }
         }
       }
     }
