@@ -1,0 +1,30 @@
+{
+  "suites": ["test/api.js"],
+  "tunnel": "browserstack",
+  "tunnelOptions": {
+    "verbose": true
+  },
+  "configs": {
+    "iamdee": {
+      "environments": [
+        { "browserName": "chrome" },
+        { "browserName": "firefox" },
+        { "browserName": "safari" },
+        { "browserName": "edge" },
+        { "browserName": "ie", "version": 11 },
+        { "browserName": "ie", "version": 10 }
+      ],
+      "browser": {
+        "plugins": ["dist/index.js"]
+      }
+    },
+    "requirejs": {
+      "environments": [
+        { "browserName": "chrome" }
+      ],
+      "browser": {
+        "plugins": ["node_modules/requirejs/require.js"]
+      }
+    }
+  }
+}

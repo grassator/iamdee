@@ -1,4 +1,4 @@
-define('anonymous-circular-dependencies', [
+define([
     'anonymous-circular-dependencies/a',
     'anonymous-circular-dependencies/b'
 ], function (a, b) {
