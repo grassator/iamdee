@@ -11,9 +11,9 @@
     }
   ],
   "configs": {
-    "ci": {
+    "min": {
       "browser": {
-        "plugins": ["dist/index.js"]
+        "plugins": ["dist/index.min.js"]
       }
     },
     "browserstack": {

@@ -72,6 +72,9 @@ interface Window {
   requirejs: IamdeeRequireFunction;
 }
 
+/** @define {boolean} */
+const IAMDEE_PRODUCTION_BUILD = false;
+
 (function(window, undefined) {
   interface ArrayMap<TKey, TValue> {
     get: (key: TKey) => TValue | undefined;
@@ -121,7 +124,7 @@ interface Window {
   interface DefinedModule {
     id: ModuleId;
     requestId?: RequestId;
-    state: ModuleState.DEFINED;
+    moduleState: ModuleState.DEFINED;
     load: (requestId: RequestId) => void;
     callbacks: ModuleCallback[];
   }
@@ -129,27 +132,27 @@ interface Window {
   interface NetworkLoadingModule {
     id: ModuleId;
     requestId: RequestId;
-    state: ModuleState.NETWORK_LOADING;
+    moduleState: ModuleState.NETWORK_LOADING;
     callbacks: ModuleCallback[];
   }
 
   interface WaitingForDependenciesModule {
     id: ModuleId;
     requestId: RequestId;
-    state: ModuleState.WAITING_FOR_DEPENDENCIES;
+    moduleState: ModuleState.WAITING_FOR_DEPENDENCIES;
     callbacks: ModuleCallback[];
     exports: {};
   }
 
   interface InitializedModule {
     id: ModuleId;
-    state: ModuleState.INITIALIZED;
+    moduleState: ModuleState.INITIALIZED;
     exports: unknown;
   }
 
   interface ErrorModule {
     id: ModuleId;
-    state: ModuleState.ERROR;
+    moduleState: ModuleState.ERROR;
     error: Error;
   }
 
@@ -165,7 +168,9 @@ interface Window {
   function noop() {}
 
   function panic(message: string) {
-    throw Error(message);
+    if (!IAMDEE_PRODUCTION_BUILD) {
+      throw Error(message);
+    }
   }
 
   const doc = document;
@@ -201,10 +206,12 @@ interface Window {
       return panic("Trying to resolve non-existing module");
     }
     if (
-      currentModule.state == ModuleState.INITIALIZED ||
-      currentModule.state == ModuleState.ERROR
+      currentModule.moduleState == ModuleState.INITIALIZED ||
+      currentModule.moduleState == ModuleState.ERROR
     ) {
-      return panic("Can not double resolve module " + currentModule.state);
+      return panic(
+        "Can not double resolve module " + currentModule.moduleState
+      );
     }
     moduleMap.set(module.id, module);
     currentModule.callbacks.forEach(function(cb) {
@@ -228,16 +235,16 @@ interface Window {
       moduleMap.set(id, module);
     } else {
       if (
-        module.state == ModuleState.INITIALIZED ||
-        module.state == ModuleState.ERROR
+        module.moduleState == ModuleState.INITIALIZED ||
+        module.moduleState == ModuleState.ERROR
       ) {
         defer(callback, [module]);
-      } else if (module.state == ModuleState.NETWORK_LOADING) {
+      } else if (module.moduleState == ModuleState.NETWORK_LOADING) {
         module.callbacks.push(callback);
-      } else if (module.state == ModuleState.DEFINED) {
+      } else if (module.moduleState == ModuleState.DEFINED) {
         module.callbacks.push(callback);
         module.load(requestId);
-      } else if (module.state == ModuleState.WAITING_FOR_DEPENDENCIES) {
+      } else if (module.moduleState == ModuleState.WAITING_FOR_DEPENDENCIES) {
         // Circular dependency
         if (module.requestId == requestId) {
           defer(callback, [module]);
@@ -274,7 +281,7 @@ interface Window {
     ) {
       if (isModuleId(moduleIdOrDependencyPathList)) {
         const module = moduleMap.get(moduleIdOrDependencyPathList);
-        if (!module || module.state !== ModuleState.INITIALIZED) {
+        if (!module || module.moduleState !== ModuleState.INITIALIZED) {
           throw Error("#3 " + moduleIdOrDependencyPathList);
         }
         return module.exports;
@@ -287,24 +294,24 @@ interface Window {
         let cjsModule: { exports: unknown } = { exports: {} };
         const module = moduleMap.get(moduleId);
         if (module) {
-          if (module.state != ModuleState.WAITING_FOR_DEPENDENCIES) {
+          if (module.moduleState != ModuleState.WAITING_FOR_DEPENDENCIES) {
             return panic("Unexpected module state");
           }
           cjsModule = module;
         }
         moduleMap.set("require", {
           id: "require",
-          state: ModuleState.INITIALIZED,
+          moduleState: ModuleState.INITIALIZED,
           exports: require
         });
         moduleMap.set("exports", {
           id: "exports",
-          state: ModuleState.INITIALIZED,
+          moduleState: ModuleState.INITIALIZED,
           exports: cjsModule.exports
         });
         moduleMap.set("module", {
           id: "module",
-          state: ModuleState.INITIALIZED,
+          moduleState: ModuleState.INITIALIZED,
           exports: cjsModule
         });
       }
@@ -321,14 +328,14 @@ interface Window {
                 );
               }
               if (
-                module.state == ModuleState.NETWORK_LOADING ||
-                module.state == ModuleState.DEFINED
+                module.moduleState == ModuleState.NETWORK_LOADING ||
+                module.moduleState == ModuleState.DEFINED
               ) {
                 return panic(
                   "Unexpected module state when resolving dependencies"
                 );
               }
-              if (module.state == ModuleState.ERROR) {
+              if (module.moduleState == ModuleState.ERROR) {
                 throw Error("#4 " + id);
               }
               return module.exports;
@@ -373,13 +380,13 @@ interface Window {
         errorEvent["lineno"] +
         ":" +
         errorEvent["colno"];
-      resolveModule({ id, state: ModuleState.ERROR, error });
+      resolveModule({ id, moduleState: ModuleState.ERROR, error });
     };
     doc.head.appendChild(el);
     return {
       id,
       requestId,
-      state: ModuleState.NETWORK_LOADING,
+      moduleState: ModuleState.NETWORK_LOADING,
       callbacks: [callback]
     };
   }
@@ -401,14 +408,14 @@ interface Window {
   ) {
     const existingModule = moduleMap.get(id);
     const definedModule: DefinedModule = {
-      state: ModuleState.DEFINED,
+      moduleState: ModuleState.DEFINED,
       id,
       callbacks: [],
       load(requestId) {
         const waitingModule: WaitingForDependenciesModule = {
           id,
           requestId,
-          state: ModuleState.WAITING_FOR_DEPENDENCIES,
+          moduleState: ModuleState.WAITING_FOR_DEPENDENCIES,
           callbacks: definedModule.callbacks,
           exports: {}
         };
@@ -420,17 +427,21 @@ interface Window {
             const result = factory.apply(undefined, arguments);
             const exports =
               result === undefined ? waitingModule.exports : result;
-            resolveModule({ id, state: ModuleState.INITIALIZED, exports });
+            resolveModule({
+              id,
+              moduleState: ModuleState.INITIALIZED,
+              exports
+            });
           },
           function(error) {
-            resolveModule({ id, state: ModuleState.ERROR, error });
+            resolveModule({ id, moduleState: ModuleState.ERROR, error });
           }
         );
       }
     };
     moduleMap.set(id, definedModule);
     if (existingModule) {
-      if (existingModule.state != ModuleState.NETWORK_LOADING) {
+      if (existingModule.moduleState != ModuleState.NETWORK_LOADING) {
         return panic("Trying to define a module that is in a wrong state");
       }
       definedModule.callbacks = existingModule.callbacks;
@@ -491,7 +502,7 @@ interface Window {
       if (expectedModuleId && expectedModuleId != id) {
         return resolveModule({
           id,
-          state: ModuleState.ERROR,
+          moduleState: ModuleState.ERROR,
           error: Error("#2")
         });
       }
