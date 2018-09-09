@@ -1,24 +1,41 @@
 {
   "suites": ["test/api.js"],
-  "tunnel": "browserstack",
   "tunnelOptions": {
-    "verbose": true,
-    "username": "dmitriykubyshkin",
-    "accessKey": "pJeVEdX1iwPY1sgXW9DB"
+    "maxConcurrency": 1,
+    "runnerClientReporter": {
+      "writeHtml": false
+    }
   },
+  "coverage": false,
+  "environments": [
+    {
+      "browserName": "chrome",
+      "chromeOptions": {
+        "args": [ "headless", "disable-gpu" ]
+      },
+      "fixSessionCapabilities": false
+    }
+  ],
   "configs": {
-    "iamdee": {
+    "ci": {
+      "browser": {
+        "plugins": ["dist/index.js"]
+      }
+    },
+    "browserstack": {
       "environments": [
-        { "browserName": "ie", "version": 9 }
+        { "browserName": "chrome" },
+        { "browserName": "firefox" },
+        { "browserName": "safari" },
+        { "browserName": "edge" },
+        { "browserName": "ie", "version": 11 },
+        { "browserName": "ie", "version": 10 }
       ],
       "browser": {
         "plugins": ["dist/index.js"]
       }
     },
     "requirejs": {
-      "environments": [
-        { "browserName": "chrome" }
-      ],
       "browser": {
         "plugins": ["node_modules/requirejs/require.js"]
       }

@@ -3,7 +3,8 @@ env: CI=true
 sudo: false
 
 node_js:
-    - 6
+  - 10
+script: xvfb-run --server-args="-screen 0 1024x768x24" npm run prepublishOnly
 notifications:
-    email:
-        - grassator@gmail.com
+  email:
+    - dmitriy@kubyshkin.name
