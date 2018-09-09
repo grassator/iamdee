@@ -2,9 +2,11 @@ language: node_js
 env: CI=true
 sudo: false
 
+addons:
+  chrome: stable
+
 node_js:
   - 10
-script: xvfb-run --server-args="-screen 0 1024x768x24" npm run prepublishOnly
 notifications:
   email:
     - dmitriy@kubyshkin.name
