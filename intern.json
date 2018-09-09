@@ -1,11 +1,5 @@
 {
   "suites": ["test/api.js"],
-  "tunnelOptions": {
-    "maxConcurrency": 1,
-    "runnerClientReporter": {
-      "writeHtml": false
-    }
-  },
   "coverage": false,
   "environments": [
     {
@@ -23,6 +17,7 @@
       }
     },
     "browserstack": {
+      "tunnel": "browserstack",
       "environments": [
         { "browserName": "chrome" },
         { "browserName": "firefox" },

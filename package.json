@@ -4,11 +4,11 @@
   "description": "Small AMD loader for inlining.",
   "main": "dist/index.min.js",
   "scripts": {
-    "prepublishOnly": "npm run lint && npm run build && npm run test-original && npm run test",
+    "prepublishOnly": "npm run lint && npm run build && npm run test",
     "clean": "rm -rf ./dist/",
+    "ci": "npm run lint && npm run build",
     "build": "tsc && npx google-closure-compiler --js=./dist/index.js --js_output_file=dist/index.min.js --language_in=ECMASCRIPT5 --compilation_level=ADVANCED",
     "test": "intern config=@ci && intern config=@requirejs",
-    "test-original": "intern config=@requirejs",
     "lint": "tslint --project ."
   },
   "repository": {

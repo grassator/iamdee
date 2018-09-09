@@ -1,9 +1,7 @@
 language: node_js
 env: CI=true
 
-addons:
-  chrome: stable
-
+script: npm run ci
 node_js:
   - 10
 notifications:
