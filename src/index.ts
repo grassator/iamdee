@@ -292,10 +292,11 @@ const IAMDEE_PRODUCTION_BUILD = false;
         let cjsModule: { exports: unknown } = { exports: {} };
         const module = moduleMap.get(moduleId);
         if (module) {
-          if (module.moduleState != ModuleState.WAITING_FOR_DEPENDENCIES) {
-            return panic("Unexpected module state");
+          if (module.moduleState == ModuleState.WAITING_FOR_DEPENDENCIES) {
+            cjsModule = module;
+          } else {
+            panic("Unexpected module state");
           }
-          cjsModule = module;
         }
         moduleMap.set("require", {
           moduleState: ModuleState.INITIALIZED,
