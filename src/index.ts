@@ -233,7 +233,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
         module.moduleState == ModuleState.INITIALIZED ||
         module.moduleState == ModuleState.ERROR
       ) {
-        defer(callback, [module]);
+        callback(module);
       } else if (module.moduleState == ModuleState.NETWORK_LOADING) {
         module.callbacks.push(callback);
       } else if (module.moduleState == ModuleState.DEFINED) {
@@ -242,7 +242,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
       } else if (module.moduleState == ModuleState.WAITING_FOR_DEPENDENCIES) {
         // Circular dependency
         if (module.requestId == requestId) {
-          defer(callback, [module]);
+          callback(module);
         } else {
           module.callbacks.push(callback);
         }
@@ -346,7 +346,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
       dependencyIds.forEach(function(id) {
         request(id, rId, dependencyReadyCallback);
       });
-      dependencyReadyCallback();
+      setTimeout(dependencyReadyCallback);
     } as IamdeeRequireFunction;
     require["config"] = config;
     return require;
@@ -383,12 +383,6 @@ const IAMDEE_PRODUCTION_BUILD = false;
       moduleState: ModuleState.NETWORK_LOADING,
       callbacks: [callback]
     };
-  }
-
-  function defer<T extends any[]>(fn: (...args: T) => void, args: T) {
-    setTimeout(function() {
-      fn.apply(undefined, args);
-    });
   }
 
   function doDefine(
