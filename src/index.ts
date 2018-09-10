@@ -385,10 +385,6 @@ const IAMDEE_PRODUCTION_BUILD = false;
     };
   }
 
-  function throwError(error: Error) {
-    throw error;
-  }
-
   function defer<T extends any[]>(fn: (...args: T) => void, args: T) {
     setTimeout(function() {
       fn.apply(undefined, args);
@@ -479,7 +475,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
 
     if (isAnonymousDefine(args)) {
       if (!expectedModuleId) {
-        return defer(throwError, [Error("#1")]);
+        throw Error("#1");
       }
       id = expectedModuleId;
       if (isAnonymousDefineWithDependencies(args)) {
