@@ -122,7 +122,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
   interface DefinedModule {
     requestId?: RequestId;
     moduleState: ModuleState.DEFINED;
-    load: (requestId: RequestId) => void;
+    forceInit: (requestId: RequestId) => void;
     callbacks: ModuleCallback[];
   }
 
@@ -238,7 +238,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
         module.callbacks.push(callback);
       } else if (module.moduleState == ModuleState.DEFINED) {
         module.callbacks.push(callback);
-        module.load(requestId);
+        module.forceInit(requestId);
       } else if (module.moduleState == ModuleState.WAITING_FOR_DEPENDENCIES) {
         // Circular dependency
         if (module.requestId == requestId) {
@@ -394,7 +394,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
     const definedModule: DefinedModule = {
       moduleState: ModuleState.DEFINED,
       callbacks: [],
-      load(requestId) {
+      forceInit(requestId) {
         const waitingModule: WaitingForDependenciesModule = {
           requestId,
           moduleState: ModuleState.WAITING_FOR_DEPENDENCIES,
@@ -429,7 +429,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
         return panic("Trying to define a module that is in a wrong state");
       }
       definedModule.callbacks = existingModule.callbacks;
-      definedModule.load(existingModule.requestId);
+      definedModule.forceInit(existingModule.requestId);
     }
   }
 

@@ -25,13 +25,13 @@
   });
 
   describe('Anonymous Modules', function () {
-    it('should be able to load an anonymous module with empty dependency list', function () {
+    it('should be able to forceInit an anonymous module with empty dependency list', function () {
       require(['anonymous-explicit-no-dependencies'], this.async().callback(function (module) {
         assert.equal(module, 'OK');
       }));
     });
 
-    it('should be able to load an anonymous module with only default dependencies', function () {
+    it('should be able to forceInit an anonymous module with only default dependencies', function () {
       require(['anonymous-only-default-dependencies'], this.async().callback(function (module) {
         assert.isFunction(module.require);
         assert.deepEqual(module.exports, { foo: "OK" });
@@ -39,7 +39,7 @@
       }));
     });
 
-    it('should be able to load an anonymous module with dependencies', function () {
+    it('should be able to forceInit an anonymous module with dependencies', function () {
       require(['anonymous-with-dependencies'], this.async().callback(function (module) {
         assert.equal(module.a, 'A');
         assert.equal(module.b.self, 'B');
@@ -47,14 +47,14 @@
       }));
     });
 
-    it('should be able to load an anonymous module with circular dependencies', function () {
+    it('should be able to forceInit an anonymous module with circular dependencies', function () {
       require(['anonymous-circular-dependencies'], this.async().callback(function (module) {
         assert.equal(module.a.getter(), 'OK');
         assert.equal(module.b(), 'OK');
       }));
     });
 
-    it('should be able to load an anonymous module with relative dependencies', function () {
+    it('should be able to forceInit an anonymous module with relative dependencies', function () {
       require(['anonymous-relative-dependencies'], this.async().callback(function (module) {
         assert.equal(module.a, 'A');
         assert.equal(module.b.self, 'B');
@@ -110,7 +110,7 @@
       }));
     });
 
-    it('should be able to load a named module with dependencies', function () {
+    it('should be able to forceInit a named module with dependencies', function () {
       require(['named-with-dependencies'], this.async().callback(function (module) {
         assert.equal(module.a, 'A');
         assert.equal(module.b.self, 'B');
@@ -118,7 +118,7 @@
       }));
     });
 
-    it('should be able to load a named module with circular dependencies', function () {
+    it('should be able to forceInit a named module with circular dependencies', function () {
       require(['named-circular-dependencies'], this.async().callback(function (module) {
         assert.equal(module.a.getter(), 'OK');
         assert.equal(module.b(), 'OK');
