@@ -8,7 +8,7 @@
     "clean": "rm -rf ./dist/",
     "ci": "npm run lint && npm run build",
     "build": "tsc && npx google-closure-compiler --js=./dist/index.js --js_output_file=dist/index.min.js --language_in=ECMASCRIPT5 --compilation_level=ADVANCED --define=IAMDEE_PRODUCTION_BUILD --language_out=ECMASCRIPT5",
-    "test": "intern config=@ci && intern config=@requirejs",
+    "test": "intern config=@min && intern config=@requirejs",
     "lint": "tslint --project ."
   },
   "repository": {

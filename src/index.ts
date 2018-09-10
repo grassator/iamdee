@@ -122,7 +122,6 @@ const IAMDEE_PRODUCTION_BUILD = false;
   }
 
   interface DefinedModule {
-    id: ModuleId;
     requestId?: RequestId;
     moduleState: ModuleState.DEFINED;
     load: (requestId: RequestId) => void;
@@ -130,14 +129,12 @@ const IAMDEE_PRODUCTION_BUILD = false;
   }
 
   interface NetworkLoadingModule {
-    id: ModuleId;
     requestId: RequestId;
     moduleState: ModuleState.NETWORK_LOADING;
     callbacks: ModuleCallback[];
   }
 
   interface WaitingForDependenciesModule {
-    id: ModuleId;
     requestId: RequestId;
     moduleState: ModuleState.WAITING_FOR_DEPENDENCIES;
     callbacks: ModuleCallback[];
@@ -145,13 +142,11 @@ const IAMDEE_PRODUCTION_BUILD = false;
   }
 
   interface InitializedModule {
-    id: ModuleId;
     moduleState: ModuleState.INITIALIZED;
     exports: unknown;
   }
 
   interface ErrorModule {
-    id: ModuleId;
     moduleState: ModuleState.ERROR;
     error: Error;
   }
@@ -200,8 +195,11 @@ const IAMDEE_PRODUCTION_BUILD = false;
     onNodeCreated = conf["onNodeCreated"] || onNodeCreated;
   }
 
-  function resolveModule(module: InitializedModule | ErrorModule) {
-    const currentModule = moduleMap.get(module.id);
+  function resolveModule(
+    id: ModuleId,
+    module: InitializedModule | ErrorModule
+  ) {
+    const currentModule = moduleMap.get(id);
     if (!currentModule) {
       return panic("Trying to resolve non-existing module");
     }
@@ -213,7 +211,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
         "Can not double resolve module " + currentModule.moduleState
       );
     }
-    moduleMap.set(module.id, module);
+    moduleMap.set(id, module);
     currentModule.callbacks.forEach(function(cb) {
       cb(module);
     });
@@ -300,17 +298,14 @@ const IAMDEE_PRODUCTION_BUILD = false;
           cjsModule = module;
         }
         moduleMap.set("require", {
-          id: "require",
           moduleState: ModuleState.INITIALIZED,
           exports: require
         });
         moduleMap.set("exports", {
-          id: "exports",
           moduleState: ModuleState.INITIALIZED,
           exports: cjsModule.exports
         });
         moduleMap.set("module", {
-          id: "module",
           moduleState: ModuleState.INITIALIZED,
           exports: cjsModule
         });
@@ -380,11 +375,10 @@ const IAMDEE_PRODUCTION_BUILD = false;
         errorEvent["lineno"] +
         ":" +
         errorEvent["colno"];
-      resolveModule({ id, moduleState: ModuleState.ERROR, error });
+      resolveModule(id, { moduleState: ModuleState.ERROR, error });
     };
     doc.head.appendChild(el);
     return {
-      id,
       requestId,
       moduleState: ModuleState.NETWORK_LOADING,
       callbacks: [callback]
@@ -409,11 +403,9 @@ const IAMDEE_PRODUCTION_BUILD = false;
     const existingModule = moduleMap.get(id);
     const definedModule: DefinedModule = {
       moduleState: ModuleState.DEFINED,
-      id,
       callbacks: [],
       load(requestId) {
         const waitingModule: WaitingForDependenciesModule = {
-          id,
           requestId,
           moduleState: ModuleState.WAITING_FOR_DEPENDENCIES,
           callbacks: definedModule.callbacks,
@@ -427,14 +419,13 @@ const IAMDEE_PRODUCTION_BUILD = false;
             const result = factory.apply(undefined, arguments);
             const exports =
               result === undefined ? waitingModule.exports : result;
-            resolveModule({
-              id,
+            resolveModule(id, {
               moduleState: ModuleState.INITIALIZED,
               exports
             });
           },
           function(error) {
-            resolveModule({ id, moduleState: ModuleState.ERROR, error });
+            resolveModule(id, { moduleState: ModuleState.ERROR, error });
           }
         );
       }
@@ -500,8 +491,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
     } else {
       id = args[0] as ModuleId;
       if (expectedModuleId && expectedModuleId != id) {
-        return resolveModule({
-          id,
+        return resolveModule(id, {
           moduleState: ModuleState.ERROR,
           error: Error("#2")
         });
