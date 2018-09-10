@@ -113,7 +113,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
     | "module";
   type ModulePath = string & { readonly __tag: unique symbol };
   type SourceUrl = string & { readonly __tag: unique symbol };
-  type RequestId = string & { readonly __tag: unique symbol };
+  type RequestId = number & { readonly __tag: unique symbol };
 
   interface ModuleCallback {
     (module: Module): void;
@@ -269,6 +269,8 @@ const IAMDEE_PRODUCTION_BUILD = false;
       return result as ModuleId;
     }
 
+    let nextRequestId = 1;
+
     const require = function(
       moduleIdOrDependencyPathList: ModuleId | ModulePath[],
       onSuccess?: IamdeeRequireCallback,
@@ -283,7 +285,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
       }
       const dependencyIds = moduleIdOrDependencyPathList.map(modulePathToId);
       let remainingDependencies = moduleIdOrDependencyPathList.length + 1;
-      const rId = requestId || ((Math.random() + "") as RequestId);
+      const rId = requestId || (nextRequestId++ as RequestId);
 
       function ensureCommonJsDependencies() {
         let cjsModule: { exports: unknown } = { exports: {} };
