@@ -41,8 +41,8 @@ define(['your-dependency'], function (yourDependency) {
 
 ## Error Codes
 
-To save bytes iamdee does not include error message strings and
-instead uses error codes. Meaning of each code is presented below:
+To save bytes iamdee does not include moduleError message strings and
+instead uses moduleError codes. Meaning of each code is presented below:
 
 1. define() call without id only works when script is loaded via require().
 2. require()'d module must not have id in its define() statement or match

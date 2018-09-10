@@ -146,7 +146,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
 
   interface ErrorModule {
     moduleState: ModuleState.ERROR;
-    error: Error;
+    moduleError: Error;
   }
 
   type Module =
@@ -375,7 +375,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
         errorEvent["lineno"] +
         ":" +
         errorEvent["colno"];
-      resolveModule(id, { moduleState: ModuleState.ERROR, error });
+      resolveModule(id, { moduleState: ModuleState.ERROR, moduleError: error });
     };
     doc.head.appendChild(el);
     return {
@@ -415,7 +415,10 @@ const IAMDEE_PRODUCTION_BUILD = false;
             });
           },
           function(error) {
-            resolveModule(id, { moduleState: ModuleState.ERROR, error });
+            resolveModule(id, {
+              moduleState: ModuleState.ERROR,
+              moduleError: error
+            });
           }
         );
       }
@@ -483,7 +486,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
       if (expectedModuleId && expectedModuleId != id) {
         return resolveModule(id, {
           moduleState: ModuleState.ERROR,
-          error: Error("#2")
+          moduleError: Error("#2")
         });
       }
       if (isNamedDefineWithDependencies(args)) {
