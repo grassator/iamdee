@@ -209,7 +209,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
       );
     }
     set(moduleMap, id, module);
-    currentModule.callbacks.forEach(function(cb) {
+    currentModule.callbacks.map(function(cb) {
       cb(module);
     });
   }
@@ -343,7 +343,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
       }
 
       ensureCommonJsDependencies();
-      dependencyIds.forEach(function(id) {
+      dependencyIds.map(function(id) {
         request(id, rId, dependencyReadyCallback);
       });
       setTimeout(dependencyReadyCallback);
