@@ -76,28 +76,26 @@ interface Window {
 const IAMDEE_PRODUCTION_BUILD = false;
 
 (function(window, undefined) {
-  interface ArrayMap<TKey, TValue> {
-    get: (key: TKey) => TValue | undefined;
-    set: (key: TKey, value: TValue) => void;
+  interface RequiredScript extends HTMLScriptElement {
+    require: ModuleId;
   }
 
-  function map<TKey, TValue>(): ArrayMap<TKey, TValue> {
-    const keys: TKey[] = [];
-    const values: TValue[] = [];
-    return {
-      get(key) {
-        return values[keys.indexOf(key)];
-      },
-      set(key, value) {
-        const index = keys.indexOf(key);
-        if (index == -1) {
-          keys.push(key);
-          values.push(value);
-        } else {
-          values[index] = value;
-        }
-      }
-    };
+  const hasOwnProperty = {}.hasOwnProperty;
+
+  function get<TKey extends string, TValue>(
+    map: { [key: string]: TValue },
+    key: TKey
+  ): TValue | undefined {
+    if (hasOwnProperty.call(map, key)) {
+      return map[key];
+    }
+  }
+  function set<TKey extends string, TValue>(
+    map: { [key: string]: TValue },
+    key: TKey,
+    value: TValue
+  ): void {
+    map[key] = value;
   }
 
   const enum ModuleState {
@@ -158,8 +156,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
     | InitializedModule
     | ErrorModule;
 
-  const moduleMap: ArrayMap<ModuleId, Module> = map();
-  const elementMap: ArrayMap<Element, ModuleId> = map();
+  const moduleMap: { [key: string]: Module } = {};
   function noop() {}
 
   function panic(message: string) {
@@ -199,7 +196,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
     id: ModuleId,
     module: InitializedModule | ErrorModule
   ) {
-    const currentModule = moduleMap.get(id);
+    const currentModule = get(moduleMap, id);
     if (!currentModule) {
       return panic("Trying to resolve non-existing module");
     }
@@ -211,7 +208,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
         "Can not double resolve module " + currentModule.moduleState
       );
     }
-    moduleMap.set(id, module);
+    set(moduleMap, id, module);
     currentModule.callbacks.forEach(function(cb) {
       cb(module);
     });
@@ -226,11 +223,11 @@ const IAMDEE_PRODUCTION_BUILD = false;
     requestId: RequestId,
     callback: ModuleCallback
   ) {
-    const module = moduleMap.get(id);
+    const module = get(moduleMap, id);
     if (!module) {
       const src = /^\/|^\w+:|\.js$/.test(id) ? id : baseUrl + id + ".js";
       const module = loadModule(id, src as SourceUrl, requestId, callback);
-      moduleMap.set(id, module);
+      set(moduleMap, id, module);
     } else {
       if (
         module.moduleState == ModuleState.INITIALIZED ||
@@ -278,7 +275,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
       onError?: (error: Error) => unknown
     ) {
       if (isModuleId(moduleIdOrDependencyPathList)) {
-        const module = moduleMap.get(moduleIdOrDependencyPathList);
+        const module = get(moduleMap, moduleIdOrDependencyPathList);
         if (!module || module.moduleState !== ModuleState.INITIALIZED) {
           throw Error("#3 " + moduleIdOrDependencyPathList);
         }
@@ -290,7 +287,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
 
       function ensureCommonJsDependencies() {
         let cjsModule: { exports: unknown } = { exports: {} };
-        const module = moduleMap.get(moduleId);
+        const module = get(moduleMap, moduleId);
         if (module) {
           if (module.moduleState == ModuleState.WAITING_FOR_DEPENDENCIES) {
             cjsModule = module;
@@ -298,15 +295,15 @@ const IAMDEE_PRODUCTION_BUILD = false;
             panic("Unexpected module state");
           }
         }
-        moduleMap.set("require", {
+        set(moduleMap, "require", {
           moduleState: ModuleState.INITIALIZED,
           exports: require
         });
-        moduleMap.set("exports", {
+        set(moduleMap, "exports", {
           moduleState: ModuleState.INITIALIZED,
           exports: cjsModule.exports
         });
-        moduleMap.set("module", {
+        set(moduleMap, "module", {
           moduleState: ModuleState.INITIALIZED,
           exports: cjsModule
         });
@@ -317,7 +314,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
           ensureCommonJsDependencies();
           try {
             const dependencies: unknown[] = dependencyIds.map(function(id) {
-              const module = moduleMap.get(id);
+              const module = get(moduleMap, id);
               if (!module) {
                 return panic(
                   "Mismatch in reported and actually loaded modules"
@@ -360,8 +357,8 @@ const IAMDEE_PRODUCTION_BUILD = false;
     callback: ModuleCallback
   ): NetworkLoadingModule {
     // need to add new script to the browser
-    const el = doc.createElement("script");
-    elementMap.set(el, id);
+    const el = doc.createElement("script") as RequiredScript;
+    el["require"] = id;
     el.src = src;
     onNodeCreated(el);
 
@@ -397,7 +394,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
     dependencies: string[],
     factory: IamdeeDefineFactoryFunction
   ) {
-    const existingModule = moduleMap.get(id);
+    const existingModule = get(moduleMap, id);
     const definedModule: DefinedModule = {
       moduleState: ModuleState.DEFINED,
       callbacks: [],
@@ -408,7 +405,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
           callbacks: definedModule.callbacks,
           exports: {}
         };
-        moduleMap.set(id, waitingModule);
+        set(moduleMap, id, waitingModule);
         const localRequire = createRequire(id, requestId);
         localRequire(
           dependencies,
@@ -427,7 +424,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
         );
       }
     };
-    moduleMap.set(id, definedModule);
+    set(moduleMap, id, definedModule);
     if (existingModule) {
       if (existingModule.moduleState != ModuleState.NETWORK_LOADING) {
         return panic("Trying to define a module that is in a wrong state");
@@ -443,7 +440,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
   function getCurrentScript() {
     let script = doc["currentScript"];
     if (script) {
-      return script;
+      return script as RequiredScript;
     }
     // Support for IE 9-11
     try {
@@ -456,9 +453,9 @@ const IAMDEE_PRODUCTION_BUILD = false;
         script = scripts[i];
         if (script.src) {
           if (lastLine.indexOf(script.src) >= 0) {
-            return script;
+            return script as RequiredScript;
           } else if ((script as any).readyState == "interactive") {
-            return script;
+            return script as RequiredScript;
           }
         }
       }
@@ -468,7 +465,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
   const define = function() {
     const args = (arguments as any) as IamdeeDefineArgs;
     const script = getCurrentScript();
-    const expectedModuleId = script && elementMap.get(script);
+    const expectedModuleId = script && script["require"];
 
     let id: ModuleId;
     let dependencies = ["require", "exports", "module"];
