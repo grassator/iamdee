@@ -79,15 +79,11 @@ const IAMDEE_PRODUCTION_BUILD = false;
     require: ModuleId;
   }
 
-  const hasOwnProperty = {}.hasOwnProperty;
-
   function get<TKey extends string, TValue>(
     map: { [key: string]: TValue },
     key: TKey
   ): TValue | undefined {
-    if (hasOwnProperty.call(map, key)) {
-      return map[key];
-    }
+    return map[key];
   }
   function set<TKey extends string, TValue>(
     map: { [key: string]: TValue },
@@ -155,7 +151,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
     | InitializedModule
     | ErrorModule;
 
-  const moduleMap: { [key: string]: Module } = {};
+  const moduleMap: { [key: string]: Module } = Object.create(null);
   function noop() {}
 
   function panic(message: string) {
