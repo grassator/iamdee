@@ -164,7 +164,6 @@ const IAMDEE_PRODUCTION_BUILD = false;
     }
   }
 
-  const doc = document;
   let baseUrl = "./";
   let onNodeCreated: Iamdee.NodeCreatedCallback = noop;
 
@@ -359,7 +358,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
   ): NetworkLoadingModule {
     // Adding new script to the browser. Since it is inserted
     // dynamically it will be "async" by default
-    const el = doc.createElement("script") as RequiredScript;
+    const el = document.createElement("script") as RequiredScript;
     el["require"] = id;
     el.src = src;
     onNodeCreated(el);
@@ -377,7 +376,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
         errorEvent["colno"];
       resolveModule(id, { moduleState: ModuleState.ERROR, moduleError: error });
     };
-    doc.head.appendChild(el);
+    document.head.appendChild(el);
     return {
       requestId,
       moduleState: ModuleState.NETWORK_LOADING,
@@ -437,10 +436,10 @@ const IAMDEE_PRODUCTION_BUILD = false;
   }
 
   // This is a live node list, so we do not need to re-query
-  const scripts = doc.getElementsByTagName("script");
+  const scripts = document.getElementsByTagName("script");
 
   function getCurrentScript() {
-    let script = doc["currentScript"];
+    let script = document["currentScript"];
     if (script) {
       return script as RequiredScript;
     }
