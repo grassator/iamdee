@@ -388,7 +388,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
   function doDefine(
     id: ModuleId,
     dependencies: string[],
-    factory: Iamdee.DefineFactoryFunction
+    factory: Iamdee.DefineFactory
   ) {
     const existingModule = get(moduleMap, id);
     const definedModule: DefinedModule = {
@@ -406,7 +406,10 @@ const IAMDEE_PRODUCTION_BUILD = false;
         localRequire(
           dependencies,
           function() {
-            const result = factory.apply(undefined, arguments);
+            const result =
+              typeof factory == "function"
+                ? factory.apply(undefined, arguments)
+                : factory;
             const exports =
               result === undefined ? waitingModule.exports : result;
             resolveModule(id, {
@@ -497,14 +500,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
       }
     }
 
-    const functionFactory =
-      typeof factory === "function"
-        ? factory
-        : function() {
-            return factory;
-          };
-
-    doDefine(id, dependencies, functionFactory);
+    doDefine(id, dependencies, factory);
   } as Iamdee.DefineFunction;
   define["amd"] = {};
 
