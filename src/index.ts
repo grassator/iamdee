@@ -74,7 +74,7 @@ interface Window {
 /** @define {boolean} */
 const IAMDEE_PRODUCTION_BUILD = false;
 
-(function(window, undefined) {
+(function(undefined) {
   interface RequiredScript extends HTMLScriptElement {
     require: ModuleId;
   }
@@ -508,4 +508,4 @@ const IAMDEE_PRODUCTION_BUILD = false;
     "" as ModuleId,
     undefined
   );
-})(window);
+})();
