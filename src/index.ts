@@ -1,75 +1,74 @@
-interface IamdeeNodeCreatedCallback {
-  (el: Element): void;
-}
+namespace Iamdee {
+  export interface NodeCreatedCallback {
+    (el: Element): void;
+  }
 
-interface IamdeeConfig {
-  baseUrl?: string;
-  onNodeCreated?: IamdeeNodeCreatedCallback;
-}
+  export interface Config {
+    baseUrl?: string;
+    onNodeCreated?: NodeCreatedCallback;
+  }
 
-interface IamdeeRequireCallback {
-  (...args: any[]): void;
-}
+  export interface RequireCallback {
+    (...args: any[]): void;
+  }
 
-interface IamdeeDefineFactoryFunction {
-  (...args: any[]): unknown;
-}
+  export interface DefineFactoryFunction {
+    (...args: any[]): unknown;
+  }
 
-type IamdeeDefineFactory = IamdeeDefineFactoryFunction | object;
+  export type DefineFactory = DefineFactoryFunction | object;
 
-interface IamdeeRequireFunction {
-  (dependencyId: string): unknown;
-  (
-    dependencyIds: string[],
-    onSuccess: IamdeeRequireCallback,
-    onError?: (error: Error) => void
-  ): void;
-  (
-    dependencyIds: string[],
-    onSuccess?: IamdeeRequireCallback,
-    onError?: (error: Error) => void
-  ): unknown;
-  config: (config: IamdeeConfig) => void;
-}
+  export interface RequireFunction {
+    (dependencyId: string): unknown;
+    (
+      dependencyIds: string[],
+      onSuccess: RequireCallback,
+      onError?: (error: Error) => void
+    ): void;
+    (
+      dependencyIds: string[],
+      onSuccess?: RequireCallback,
+      onError?: (error: Error) => void
+    ): unknown;
+    config: (config: Config) => void;
+  }
 
-type IamdeeAnonymousDefineWithDependenciesArgs = [
-  string[],
-  IamdeeDefineFactory
-];
+  export type AnonymousDefineWithDependenciesArgs = [string[], DefineFactory];
 
-type IamdeeAnonymousDefineWithoutDependenciesArgs = [IamdeeDefineFactory];
+  export type AnonymousDefineWithoutDependenciesArgs = [DefineFactory];
 
-type IamdeeAnonymousDefineArgs =
-  | IamdeeAnonymousDefineWithDependenciesArgs
-  | IamdeeAnonymousDefineWithoutDependenciesArgs;
+  export type AnonymousDefineArgs =
+    | AnonymousDefineWithDependenciesArgs
+    | AnonymousDefineWithoutDependenciesArgs;
 
-type IamdeeNamedDefineWithDependenciesArgs = [
-  string,
-  string[],
-  IamdeeDefineFactory
-];
+  export type NamedDefineWithDependenciesArgs = [
+    string,
+    string[],
+    DefineFactory
+  ];
 
-type IamdeeNamedDefineWithoutDependenciesArgs = [string, IamdeeDefineFactory];
+  export type NamedDefineWithoutDependenciesArgs = [string, DefineFactory];
 
-type IamdeeNamedDefineArgs =
-  | IamdeeNamedDefineWithDependenciesArgs
-  | IamdeeNamedDefineWithoutDependenciesArgs;
+  export type NamedDefineArgs =
+    | NamedDefineWithDependenciesArgs
+    | NamedDefineWithoutDependenciesArgs;
 
-type IamdeeDefineArgs = IamdeeAnonymousDefineArgs | IamdeeNamedDefineArgs;
+  export type DefineArgs = AnonymousDefineArgs | NamedDefineArgs;
 
-interface IamdeeDefineFunction {
-  (factory: IamdeeDefineFactory): void;
-  (dependencies: string[], factory: IamdeeDefineFactory): void;
-  (id: string, dependencies: string[], factory: IamdeeDefineFactory): void;
-  (id: string, factory: IamdeeDefineFactory): void;
-  <T extends IamdeeDefineArgs>(...args: T): void;
-  amd: {};
+  export interface DefineFunction {
+    (factory: DefineFactory): void;
+    (dependencies: string[], factory: DefineFactory): void;
+    (id: string, dependencies: string[], factory: DefineFactory): void;
+    (id: string, factory: DefineFactory): void;
+    <T extends DefineArgs>(...args: T): void;
+    amd: {};
+  }
 }
 
 interface Window {
-  define: IamdeeDefineFunction;
-  require: IamdeeRequireFunction;
-  requirejs: IamdeeRequireFunction;
+  define: Iamdee.DefineFunction;
+  require: Iamdee.RequireFunction;
+  requirejs: Iamdee.RequireFunction;
 }
 
 /** @define {boolean} */
@@ -167,27 +166,27 @@ const IAMDEE_PRODUCTION_BUILD = false;
 
   const doc = document;
   let baseUrl = "./";
-  let onNodeCreated: IamdeeNodeCreatedCallback = noop;
+  let onNodeCreated: Iamdee.NodeCreatedCallback = noop;
 
   function isAnonymousDefine(
-    args: IamdeeDefineArgs
-  ): args is IamdeeAnonymousDefineArgs {
+    args: Iamdee.DefineArgs
+  ): args is Iamdee.AnonymousDefineArgs {
     return typeof args[0] != "string";
   }
 
   function isAnonymousDefineWithDependencies(
-    args: IamdeeAnonymousDefineArgs
-  ): args is IamdeeAnonymousDefineWithDependenciesArgs {
+    args: Iamdee.AnonymousDefineArgs
+  ): args is Iamdee.AnonymousDefineWithDependenciesArgs {
     return Array.isArray(args[0]);
   }
 
   function isNamedDefineWithDependencies(
-    args: IamdeeNamedDefineArgs
-  ): args is IamdeeNamedDefineWithDependenciesArgs {
+    args: Iamdee.NamedDefineArgs
+  ): args is Iamdee.NamedDefineWithDependenciesArgs {
     return Array.isArray(args[1]);
   }
 
-  function config(conf: IamdeeConfig) {
+  function config(conf: Iamdee.Config) {
     baseUrl = conf["baseUrl"] || baseUrl;
     onNodeCreated = conf["onNodeCreated"] || onNodeCreated;
   }
@@ -273,7 +272,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
 
     const require = function(
       moduleIdOrDependencyPathList: ModuleId | ModulePath[],
-      onSuccess?: IamdeeRequireCallback,
+      onSuccess?: Iamdee.RequireCallback,
       onError?: (error: Error) => unknown
     ) {
       if (isModuleId(moduleIdOrDependencyPathList)) {
@@ -347,7 +346,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
         request(id, rId, dependencyReadyCallback);
       });
       setTimeout(dependencyReadyCallback);
-    } as IamdeeRequireFunction;
+    } as Iamdee.RequireFunction;
     require["config"] = config;
     return require;
   }
@@ -389,7 +388,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
   function doDefine(
     id: ModuleId,
     dependencies: string[],
-    factory: IamdeeDefineFactoryFunction
+    factory: Iamdee.DefineFactoryFunction
   ) {
     const existingModule = get(moduleMap, id);
     const definedModule: DefinedModule = {
@@ -463,13 +462,13 @@ const IAMDEE_PRODUCTION_BUILD = false;
   }
 
   const define = function() {
-    const args = (arguments as any) as IamdeeDefineArgs;
+    const args = (arguments as any) as Iamdee.DefineArgs;
     const script = getCurrentScript();
     const expectedModuleId = script && script["require"];
 
     let id: ModuleId;
     let dependencies = ["require", "exports", "module"];
-    let factory: IamdeeDefineFactory = noop;
+    let factory: Iamdee.DefineFactory = noop;
 
     if (isAnonymousDefine(args)) {
       if (!expectedModuleId) {
@@ -506,7 +505,7 @@ const IAMDEE_PRODUCTION_BUILD = false;
           };
 
     doDefine(id, dependencies, functionFactory);
-  } as IamdeeDefineFunction;
+  } as Iamdee.DefineFunction;
   define["amd"] = {};
 
   window["define"] = define;
