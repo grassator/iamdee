@@ -358,7 +358,8 @@ const IAMDEE_PRODUCTION_BUILD = false;
     requestId: RequestId,
     callback: ModuleCallback
   ): NetworkLoadingModule {
-    // need to add new script to the browser
+    // Adding new script to the browser. Since it is inserted
+    // dynamically it will be "async" by default
     const el = doc.createElement("script") as RequiredScript;
     el["require"] = id;
     el.src = src;
