@@ -464,23 +464,19 @@ const IAMDEE_PRODUCTION_BUILD = false;
     const script = getCurrentScript();
     const expectedModuleId = script && script["require"];
 
-    let id: ModuleId;
     let dependencies = ["require", "exports", "module"];
-    let factory: Iamdee.DefineFactory = noop;
 
     if (isAnonymousDefine(args)) {
       if (!expectedModuleId) {
         throw Error("#1");
       }
-      id = expectedModuleId;
       if (isAnonymousDefineWithDependencies(args)) {
-        dependencies = args[0];
-        factory = args[1];
+        doDefine(expectedModuleId, args[0], args[1]);
       } else {
-        factory = args[0];
+        doDefine(expectedModuleId, dependencies, args[0]);
       }
     } else {
-      id = args[0] as ModuleId;
+      const id = args[0] as ModuleId;
       if (expectedModuleId && expectedModuleId != id) {
         return resolveModule(id, {
           moduleState: ModuleState.ERROR,
@@ -488,14 +484,11 @@ const IAMDEE_PRODUCTION_BUILD = false;
         });
       }
       if (isNamedDefineWithDependencies(args)) {
-        dependencies = args[1];
-        factory = args[2];
+        doDefine(id, args[1], args[2]);
       } else {
-        factory = args[1];
+        doDefine(id, dependencies, args[1]);
       }
     }
-
-    doDefine(id, dependencies, factory);
   } as Iamdee.DefineFunction;
   define["amd"] = {};
 
