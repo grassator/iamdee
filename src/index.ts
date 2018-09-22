@@ -359,18 +359,11 @@ const IAMDEE_PRODUCTION_BUILD = false;
     el.src = src;
     onNodeCreated(el);
 
-    el.onerror = function(errorEvent) {
-      const error: Error = Error(errorEvent["message"]);
-      error["stack"] =
-        "Error: " +
-        errorEvent["message"] +
-        "\n    at " +
-        errorEvent["filename"] +
-        ":" +
-        errorEvent["lineno"] +
-        ":" +
-        errorEvent["colno"];
-      resolveModule(id, { moduleState: ModuleState.ERROR, moduleError: error });
+    el.onerror = function() {
+      resolveModule(id, {
+        moduleState: ModuleState.ERROR,
+        moduleError: Error("#5 " + id)
+      });
     };
     document.head.appendChild(el);
     return {

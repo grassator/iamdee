@@ -48,6 +48,8 @@ instead uses moduleError codes. Meaning of each code is presented below:
 2. require()'d module must not have id in its define() statement or match
 the one specified in the requesting require() statement.
 3. Synchronous require of the form `const foo = require("foo")` is only allowed for already loaded modules.
+4. Module loading failed because its dependency failed to load. The name of the failed dependency is written after the error code.
+5. Failed to load the script. Usually this indicates a network or a security policy error. 
 
 ## License
 
