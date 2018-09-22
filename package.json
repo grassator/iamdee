@@ -7,7 +7,10 @@
     "prepublishOnly": "npm run lint && npm run build && npm run test",
     "clean": "rm -rf ./dist/",
     "ci": "npm run lint && npm run build",
-    "build": "tsc && npx google-closure-compiler --js=./dist/index.js --js_output_file=dist/index.min.js --language_in=ECMASCRIPT5 --compilation_level=ADVANCED --define=IAMDEE_PRODUCTION_BUILD --language_out=ECMASCRIPT5",
+    "build": "tsc && npm run min-old && npm run min-modern",
+    "min": "npx google-closure-compiler --js=./dist/index.js --language_in=ECMASCRIPT5 --compilation_level=ADVANCED --language_out=ECMASCRIPT5 --define=IAMDEE_PRODUCTION_BUILD",
+    "min-old": "npm run min -- --js_output_file=dist/index.min.js",
+    "min-modern": "npm run min -- --js_output_file=dist/index.modern.min.js --define=IAMDEE_MODERN_BROWSER",
     "test": "intern config=@min && intern config=@requirejs",
     "lint": "tslint --project ."
   },

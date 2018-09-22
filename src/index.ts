@@ -74,6 +74,9 @@ interface Window {
 /** @define {boolean} */
 const IAMDEE_PRODUCTION_BUILD = false;
 
+/** @define {boolean} */
+const IAMDEE_MODERN_BROWSER = false;
+
 (function(undefined) {
   interface RequiredScript extends HTMLScriptElement {
     require: ModuleId;
@@ -461,7 +464,9 @@ const IAMDEE_PRODUCTION_BUILD = false;
 
   const define = function() {
     const args = (arguments as any) as Iamdee.DefineArgs;
-    const script = getCurrentScript();
+    const script = IAMDEE_MODERN_BROWSER
+      ? (document["currentScript"] as RequiredScript)
+      : getCurrentScript();
     const expectedModuleId = script && script["require"];
 
     let dependencies = ["require", "exports", "module"];
