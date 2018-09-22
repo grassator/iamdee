@@ -202,6 +202,13 @@ const IAMDEE_PRODUCTION_BUILD = false;
         "Can not double resolve module " + currentModule.moduleState
       );
     }
+    // This makes sure script errors are reported
+    // to console and any custom onerror handlers
+    if (module.moduleState == ModuleState.ERROR) {
+      setTimeout(function() {
+        throw module.moduleError;
+      });
+    }
     set(moduleMap, id, module);
     currentModule.callbacks.map(function(cb) {
       cb(module);
