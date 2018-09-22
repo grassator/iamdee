@@ -8,7 +8,7 @@
 [travis-image]: https://travis-ci.org/grassator/iamdee.svg?branch=master
 
 
-Small AMD loader designed for inlining into the page – just ~1.1Kb (~640 bytes gzipped). It has original `require.js`-compatible API and should be a stand-in replacement if you don't require advanced features like plugins, paths or shims. 
+Small AMD loader designed for inlining into the page – just ~2kb (~1kb gzipped). It has original `require.js`-compatible API and should be a stand-in replacement if you don't require advanced features like plugins, paths or shims. 
 
 ## Usage
 
@@ -38,6 +38,9 @@ define(['your-dependency'], function (yourDependency) {
 
 * Evergreen (Chrome, Firefox, Opera, Safari, Edge)
 * IE9+
+
+> If you only need to support evergreen browsers you can save ~100 bytes by
+using `dist/index.modern.min.js` custom build.
 
 ## Error Codes
 
