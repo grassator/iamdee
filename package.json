@@ -14,6 +14,12 @@
     "test": "intern config=@min && intern config=@requirejs",
     "lint": "tslint --project ."
   },
+  "files": [
+    "dist/index.d.ts",
+    "dist/index.js",
+    "dist/index.min.js",
+    "dist/index.modern.min.js"
+  ],
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/grassator/iamdee.git"
