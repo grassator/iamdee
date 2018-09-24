@@ -6,7 +6,7 @@
   "scripts": {
     "prepublishOnly": "npm run lint && npm run build && npm run test",
     "clean": "rm -rf ./dist/",
-    "ci": "npm run lint && npm run build",
+    "ci": "npm run lint && npm run build && npm test",
     "build": "tsc && npm run min-old && npm run min-modern",
     "min": "npx google-closure-compiler --js=./dist/index.js --language_in=ECMASCRIPT5 --compilation_level=ADVANCED --language_out=ECMASCRIPT5 --define=IAMDEE_PRODUCTION_BUILD",
     "min-old": "npm run min -- --js_output_file=dist/index.min.js",
