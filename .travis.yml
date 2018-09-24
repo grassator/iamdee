@@ -1,9 +1,14 @@
 language: node_js
 env: CI=true
-sudo: false
 
+addons:
+  chrome: stable
+cache:
+  directories:
+  - node_modules
+script: npm run ci
 node_js:
-    - 6
+  - 10
 notifications:
-    email:
-        - grassator@gmail.com
+  email:
+    - dmitriy@kubyshkin.name

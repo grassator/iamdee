@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manual Smoke Test</title>
+  <script src="../dist/index.js"></script>
+</head>
+<body>
+<script>
+  require.config({ baseUrl: "../fixtures/" });
+  require(['anonymous-explicit-no-dependencies'], function () {
+    var h1 = document.createElement('h1');
+    var text = document.createTextNode('Works!');
+    h1.appendChild(text);
+    document.body.appendChild(h1);
+  });
+</script>
+</body>
+</html>

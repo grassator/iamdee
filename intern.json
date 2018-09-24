@@ -1,0 +1,42 @@
+{
+  "suites": ["test/api.js"],
+  "coverage": false,
+  "environments": [
+    {
+      "browserName": "chrome",
+      "chromeOptions": {
+        "args": [ "headless", "disable-gpu", "no-sandbox" ]
+      },
+      "fixSessionCapabilities": "no-detect"
+    }
+  ],
+  "tunnelOptions": {
+    "drivers": [{ "name": "chrome", "version": "2.36" }]
+  },
+  "configs": {
+    "min": {
+      "browser": {
+        "plugins": ["dist/index.min.js"]
+      }
+    },
+    "browserstack": {
+      "tunnel": "browserstack",
+      "environments": [
+        { "browserName": "chrome" },
+        { "browserName": "firefox" },
+        { "browserName": "safari" },
+        { "browserName": "edge" },
+        { "browserName": "ie", "version": 11 },
+        { "browserName": "ie", "version": 10 }
+      ],
+      "browser": {
+        "plugins": ["dist/index.js"]
+      }
+    },
+    "requirejs": {
+      "browser": {
+        "plugins": ["node_modules/requirejs/require.js"]
+      }
+    }
+  }
+}
