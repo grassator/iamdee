@@ -10,6 +10,9 @@
       "fixSessionCapabilities": "no-detect"
     }
   ],
+  "tunnelOptions": {
+    "drivers": [{ "name": "chrome", "version": "2.36" }]
+  },
   "configs": {
     "min": {
       "browser": {
