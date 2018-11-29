@@ -82,20 +82,6 @@ const IAMDEE_MODERN_BROWSER = false;
     require: ModuleId;
   }
 
-  function get<TKey extends string, TValue>(
-    map: { [key: string]: TValue },
-    key: TKey
-  ): TValue | undefined {
-    return map[key];
-  }
-  function set<TKey extends string, TValue>(
-    map: { [key: string]: TValue },
-    key: TKey,
-    value: TValue
-  ): void {
-    map[key] = value;
-  }
-
   const enum ModuleState {
     DEFINED = 0,
     NETWORK_LOADING = 1,
@@ -193,7 +179,7 @@ const IAMDEE_MODERN_BROWSER = false;
     id: ModuleId,
     module: InitializedModule | ErrorModule
   ) {
-    const currentModule = get(moduleMap, id);
+    const currentModule = moduleMap[id];
     if (!currentModule) {
       return panic("Trying to resolve non-existing module");
     }
@@ -212,7 +198,7 @@ const IAMDEE_MODERN_BROWSER = false;
         throw module.moduleError;
       });
     }
-    set(moduleMap, id, module);
+    moduleMap[id] = module;
     currentModule.callbacks.map(function(cb) {
       cb(module);
     });
@@ -227,11 +213,10 @@ const IAMDEE_MODERN_BROWSER = false;
     requestId: RequestId,
     callback: ModuleCallback
   ) {
-    const module = get(moduleMap, id);
+    const module = moduleMap[id];
     if (!module) {
       const src = /^\/|^\w+:|\.js$/.test(id) ? id : baseUrl + id + ".js";
-      const module = loadModule(id, src as SourceUrl, requestId, callback);
-      set(moduleMap, id, module);
+      moduleMap[id] = loadModule(id, src as SourceUrl, requestId, callback);
     } else {
       if (
         module.moduleState == ModuleState.INITIALIZED ||
@@ -281,7 +266,7 @@ const IAMDEE_MODERN_BROWSER = false;
       onError?: (error: Error) => unknown
     ) {
       if (isModuleId(moduleIdOrDependencyPathList)) {
-        const module = get(moduleMap, moduleIdOrDependencyPathList);
+        const module = moduleMap[moduleIdOrDependencyPathList];
         if (!module || module.moduleState !== ModuleState.INITIALIZED) {
           throw Error("#3 " + moduleIdOrDependencyPathList);
         }
@@ -293,7 +278,7 @@ const IAMDEE_MODERN_BROWSER = false;
 
       function ensureCommonJsDependencies() {
         let cjsModule: { exports: unknown } = { exports: {} };
-        const module = get(moduleMap, moduleId);
+        const module = moduleMap[moduleId];
         if (module) {
           if (module.moduleState == ModuleState.WAITING_FOR_DEPENDENCIES) {
             cjsModule = module;
@@ -301,18 +286,18 @@ const IAMDEE_MODERN_BROWSER = false;
             panic("Unexpected module state");
           }
         }
-        set(moduleMap, "require", {
+        moduleMap["require"] = {
           moduleState: ModuleState.INITIALIZED,
           exports: require
-        });
-        set(moduleMap, "exports", {
+        };
+        moduleMap["exports"] = {
           moduleState: ModuleState.INITIALIZED,
           exports: cjsModule.exports
-        });
-        set(moduleMap, "module", {
+        };
+        moduleMap["module"] = {
           moduleState: ModuleState.INITIALIZED,
           exports: cjsModule
-        });
+        };
       }
 
       function dependencyReadyCallback() {
@@ -320,7 +305,7 @@ const IAMDEE_MODERN_BROWSER = false;
           ensureCommonJsDependencies();
           try {
             const dependencies: unknown[] = dependencyIds.map(function(id) {
-              const module = get(moduleMap, id);
+              const module = moduleMap[id];
               if (!module) {
                 return panic(
                   "Mismatch in reported and actually loaded modules"
@@ -388,7 +373,7 @@ const IAMDEE_MODERN_BROWSER = false;
     dependencies: string[],
     factory: Iamdee.DefineFactory
   ) {
-    const existingModule = get(moduleMap, id);
+    const existingModule = moduleMap[id];
     const definedModule: DefinedModule = {
       moduleState: ModuleState.DEFINED,
       callbacks: [],
@@ -399,7 +384,7 @@ const IAMDEE_MODERN_BROWSER = false;
           callbacks: definedModule.callbacks,
           exports: {}
         };
-        set(moduleMap, id, waitingModule);
+        moduleMap[id] = waitingModule;
         const localRequire = createRequire(id, requestId);
         localRequire(
           dependencies,
@@ -424,7 +409,7 @@ const IAMDEE_MODERN_BROWSER = false;
         );
       }
     };
-    set(moduleMap, id, definedModule);
+    moduleMap[id] = definedModule;
     if (existingModule) {
       if (existingModule.moduleState != ModuleState.NETWORK_LOADING) {
         return panic("Trying to define a module that is in a wrong state");
