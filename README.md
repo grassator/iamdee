@@ -33,6 +33,7 @@ define(['your-dependency'], function (yourDependency) {
 * Named modules
 * Anonymous modules
 * `baseUrl` config
+* Loading non-AMD scripts
 
 ## Browser Support
 
