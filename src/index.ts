@@ -428,7 +428,7 @@ const IAMDEE_MODERN_BROWSER = false;
   }
 
   // This is a live node list, so we do not need to re-query
-  const scripts = document.getElementsByTagName("script");
+  const scripts = document.scripts;
 
   function getCurrentScript() {
     let script = document["currentScript"];
