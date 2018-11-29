@@ -125,4 +125,11 @@
       }));
     });
   });
+  describe("non-AMD scripts", function () {
+    it('should report non-AMD script as loaded as undefined', function () {
+      require(['no-define'], this.async().callback(function (module) {
+        assert.equal(module, undefined);
+      }));
+    })
+  });
 })();

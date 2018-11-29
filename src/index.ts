@@ -360,6 +360,14 @@ const IAMDEE_MODERN_BROWSER = false;
         moduleError: Error("#5 " + id)
       });
     };
+    el.onload = function() {
+      if (moduleMap[id].moduleState === ModuleState.NETWORK_LOADING) {
+        resolveModule(id, {
+          moduleState: ModuleState.INITIALIZED,
+          exports: undefined
+        });
+      }
+    };
     document.head.appendChild(el);
     return {
       requestId,
