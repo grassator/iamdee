@@ -441,7 +441,7 @@ const IAMDEE_MODERN_BROWSER = false;
     } catch (err) {
       // Internet Explorer 11 does not support currentScript,
       // so we are inspecting error stack for the right script url
-      const lastLine = err.stack ? err.stack.split("\n").pop() : "";
+      const lastLine = (err.stack || "").split("\n").pop();
       for (let i = scripts.length - 1; i >= 0; --i) {
         script = scripts[i];
         if (script.src) {
